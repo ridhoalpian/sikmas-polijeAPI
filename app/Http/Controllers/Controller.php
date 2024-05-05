@@ -29,7 +29,6 @@ class Controller extends BaseController
         if (Auth::attempt($loginData)) {
             $token = Auth::user()->createToken('authToken')->plainTextToken;
             return response()->json([
-                'data' => Auth::user(),
                 'token' => $token,
             ], 200);
         }
@@ -39,15 +38,15 @@ class Controller extends BaseController
         ], 400);
     }
 
-    public function getUserData(Request $request)
+    public function getUserData()
     {
-        $email = $request->input('email');
-        $user = User::where('email', $email)->first();
+        $user = Auth::user();
 
         if ($user) {
             return response()->json([
-                'emailUKM' => $user->email,
-                'namaUKM' => $user->name,
+                'name' => $user->name,
+                'email' => $user->email,
+                'ketua' => $user->ketua,
             ]);
         } else {
             return response()->json(['error' => 'User not found'], 404);

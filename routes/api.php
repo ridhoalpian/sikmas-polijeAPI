@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('/register', [Controller::class, 'register']);
+
 Route::post('/login', [Controller::class, 'loginApi']);
-Route::get('/getUserData', [Controller::class, 'getUserData']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user-data', [Controller::class, 'getUserData']);
+});
