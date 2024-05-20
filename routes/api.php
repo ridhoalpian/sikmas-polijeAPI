@@ -22,3 +22,11 @@ Route::post('/login', [Controller::class, 'loginApi']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user-data', [Controller::class, 'getUserData']);
 });
+
+Route::post('change-password', [Controller::class, 'changePassword']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('update-user', [Controller::class, 'update']);
+});
+
+Route::middleware('auth:sanctum')->post('validate-old-password', [Controller::class, 'validateOldPassword']);
