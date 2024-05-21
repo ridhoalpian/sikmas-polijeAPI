@@ -9,84 +9,55 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class PrestasiController extends Controller
 {
-    public function index()
+    public function store(Request $request)
     {
-        $prestasi = Prestasi::join('users', 'prestasi.user_id', '=', 'users.id')
-            ->select('prestasi.*', 'users.name')
-            ->orderBy('prestasi.namalomba', 'asc')
-            ->get();
-
-        return view('prestasi.prestasi', compact('prestasi'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($idprestasi)
-    {
-        $prestasi_ubah = Prestasi::join('users', 'prestasi.user_id', '=', 'users.id')
-            ->select('prestasi.*', 'users.name')
-            ->where('prestasi.idprestasi', $idprestasi)
-            ->firstOrFail();
-
-        return view('prestasi.prestasi-ubah', [
-            'prestasi_ubah' => $prestasi_ubah,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $idprestasi)
-    {
-        $validated = $request->validate([
-            // Validasi lainnya
-            'sertifikat' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
-            'dokumentasi' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
-            'status_prestasi' => 'required|in:disetujui,ditolak',
+        // Validasi data input
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:users,id', // Validasi user_id
+            'namalomba' => 'required|string|max:50',
+            'kategorilomba' => 'required|in:individu,kelompok',
+            'tanggallomba' => 'required|date',
+            'juara' => 'required|string|in:Juara 1,Juara 2,Juara 3,Harapan 1,Harapan 2,lainnya',
+            'penyelenggara' => 'required|string|max:30',
+            'lingkup' => 'required|string|in:kabupaten,provinsi,nasional,lainnya',
+            'sertifikat' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'dokumentasi' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $prestasi = Prestasi::findOrFail($idprestasi);
+        // Simpan gambar sertifikat
+        $sertifikatPath = $request->file('sertifikat')->store('sertifikat', 'public');
 
-        // Proses gambar sertifikat
-        if ($request->hasFile('sertifikat')) {
-            $file = $request->file('sertifikat');
-            $fileName = $file->getClientOriginalName(); // Menggunakan nama asli file
+        // Simpan gambar dokumentasi
+        $dokumentasiPath = $request->file('dokumentasi')->store('dokumentasi', 'public');
 
-            // Menyimpan file ke folder public/sertifikat
-            $sertifikatPath = $file->storeAs('sertifikat', $fileName, 'public');
+        // Buat data prestasi baru
+        $prestasi = new Prestasi;
+        $prestasi->user_id = $validatedData['user_id']; // Mendapatkan user_id dari request
+        $prestasi->namalomba = $validatedData['namalomba'];
+        $prestasi->kategorilomba = $validatedData['kategorilomba'];
+        $prestasi->tanggallomba = $validatedData['tanggallomba'];
+        $prestasi->juara = $validatedData['juara'];
+        $prestasi->penyelenggara = $validatedData['penyelenggara'];
+        $prestasi->lingkup = $validatedData['lingkup'];
+        $prestasi->sertifikat = $sertifikatPath;
+        $prestasi->dokumentasi = $dokumentasiPath;
+        $prestasi->statusprestasi = $request->input('statusprestasi', 'belum disetujui'); // Default value if not provided
+        $prestasi->save();
 
-            // Hapus file lama jika ada
-            if ($prestasi->sertifikat) {
-                Storage::delete('public/' . $prestasi->sertifikat);
-            }
+        // Kembalikan respons JSON
+        return response()->json(['success' => true, 'message' => 'Data prestasi berhasil disimpan']);
+    }
 
-            $validated['sertifikat'] = $sertifikatPath;
-        }
+    public function index(Request $request)
+    {
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
 
-        // Proses gambar dokumentasi
-        if ($request->hasFile('dokumentasi')) {
-            $file = $request->file('dokumentasi');
-            $fileName = $file->getClientOriginalName(); // Menggunakan nama asli file
+        $user_id = $validatedData['user_id'];
 
-            // Menyimpan file ke folder public/sertifikat
-            $dokumentasiPath = $file->storeAs('dokumentasi', $fileName, 'public');
+        $prestasi = Prestasi::where('user_id', $user_id)->get();
 
-            // Hapus file lama jika ada
-            if ($prestasi->dokumentasi) {
-                Storage::delete('public/' . $prestasi->dokumentasi);
-            }
-
-            $validated['dokumentasi'] = $dokumentasiPath;
-        }
-
-        // Set nilai status prestasi dari input formulir
-        $validated['statusprestasi'] = $request->status_prestasi;
-
-        // Simpan perubahan dengan validasi yang sudah diatur sebelumnya
-        $prestasi->update($validated);
-
-        Alert::info('Success', 'Data Prestasi berhasil disimpan !');
-        return redirect('/prestasi');
+        return response()->json($prestasi);
     }
 }

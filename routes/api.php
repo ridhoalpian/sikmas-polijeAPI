@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PrestasiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,3 +31,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->post('validate-old-password', [Controller::class, 'validateOldPassword']);
+
+Route::post('prestasi', [PrestasiController::class, 'store']);
+Route::get('prestasi', [PrestasiController::class, 'index']);

@@ -45,6 +45,7 @@ class Controller extends BaseController
 
         if ($user) {
             return response()->json([
+                'user_id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'ketua' => $user->ketua,
