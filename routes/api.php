@@ -34,3 +34,4 @@ Route::middleware('auth:sanctum')->post('validate-old-password', [Controller::cl
 
 Route::post('prestasi', [PrestasiController::class, 'store']);
 Route::get('prestasi', [PrestasiController::class, 'index']);
+Route::post('prestasi/{idprestasi}', [PrestasiController::class, 'updatePrestasi']);
