@@ -24,6 +24,7 @@ class Prestasi extends Model
         'tanggallomba',
         'juara',
         'penyelenggara',
-        'lingkup'
+        'lingkup',
+        'note'
     ];
 }
