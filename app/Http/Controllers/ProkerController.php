@@ -39,7 +39,7 @@ class ProkerController extends Controller
             // Menyimpan file lampiran jika ada
             $lampiranProkerPath = null;
             if ($request->hasFile('lampiran_proker')) {
-                $lampiranProkerPath = $request->file('lampiran_proker')->store('public/lampiran_proker');
+                $lampiranProkerPath = $request->file('lampiran_proker')->store('lampiran', 'public');
             }
 
             $proker = ProgamKerja::create([
