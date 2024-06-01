@@ -9,61 +9,51 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class ProkerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $proker = ProgamKerja::join('users', 'progam_kerja.user_id', '=', 'users.id')
-            ->select('progam_kerja.*', 'users.name')
-            ->orderBy('progam_kerja.nama_proker', 'asc')
-            ->get();
-
-        return view('proker.proker', compact('proker'));
-    }
-
-    public function edit($idproker)
-    {
-        $proker_ubah = ProgamKerja::join('users', 'progam_kerja.user_id', '=', 'users.id')
-            ->select('progam_kerja.*', 'users.name')
-            ->where('progam_kerja.idproker', $idproker)
-            ->firstOrFail();
-
-        return view('proker.proker-ubah', [
-            'proker_ubah' => $proker_ubah,
-        ]);
-    }
-
-    public function ubahProker(Request $request, $idproker)
-    {
-        $validated = $request->validate([
-            // Validasi lainnya
-            'lampiran_proker' => 'nullable|mimes:pdf|max:3000', // Hanya file PDF dengan ukuran maksimum 3MB yang diterima
-            'status_proker' => 'required|in:disetujui,ditolak', // Ubah menjadi lowercase sesuai inputan di blade
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
         ]);
 
-        $proker = ProgamKerja::findOrFail($idproker);
+        $user_id = $validatedData['user_id'];
 
-        // Proses file lampiran proker
-        if ($request->hasFile('lampiran_proker')) {
-            $file = $request->file('lampiran_proker');
-            $fileName = $file->getClientOriginalName(); // Menggunakan nama asli file
+        $proker = ProgamKerja::where('user_id', $user_id)->get();
 
-            // Menyimpan file ke folder public/sertifikat
-            $lampiranPath = $file->storeAs('lampiranproker', $fileName, 'public');
+        return response()->json($proker);
+    }
 
-            // Hapus file lama jika ada
-            if ($proker->lampiran_proker) {
-                Storage::delete('public/' . $proker->lampiran_proker);
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'nama_proker' => 'required|string|max:50',
+            'penanggung_jawab' => 'required|string|max:50',
+            'uraian_proker' => 'required|string|max:150',
+            'periode' => 'required|integer',
+            'lampiran_proker' => 'required|file|mimes:pdf|max:2048', // Validasi untuk file PDF
+        ]);
+
+        try {
+            $user_id = $validatedData['user_id'];
+
+            // Menyimpan file lampiran jika ada
+            $lampiranProkerPath = null;
+            if ($request->hasFile('lampiran_proker')) {
+                $lampiranProkerPath = $request->file('lampiran_proker')->store('public/lampiran_proker');
             }
 
-            $validated['lampiran_proker'] = $lampiranPath;
+            $proker = ProgamKerja::create([
+                'user_id' => $user_id,
+                'nama_proker' => $validatedData['nama_proker'],
+                'penanggung_jawab' => $validatedData['penanggung_jawab'],
+                'uraian_proker' => $validatedData['uraian_proker'],
+                'periode' => $validatedData['periode'],
+                'lampiran_proker' => $lampiranProkerPath,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Data proker berhasil disimpan']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
-
-        // Set nilai status proker dari input formulir
-        $validated['status_proker'] = $request->status_proker;
-
-        // Simpan perubahan dengan validasi yang sudah diatur sebelumnya
-        $proker->update($validated);
-
-        Alert::info('Success', 'Data Progam Kerja berhasil disimpan !');
-        return redirect('/proker');
     }
 }

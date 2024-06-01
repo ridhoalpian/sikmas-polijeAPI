@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PrestasiController;
+use App\Http\Controllers\ProkerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,3 +36,6 @@ Route::middleware('auth:sanctum')->post('validate-old-password', [Controller::cl
 Route::post('prestasi', [PrestasiController::class, 'store']);
 Route::get('prestasi', [PrestasiController::class, 'index']);
 Route::post('prestasi/{idprestasi}', [PrestasiController::class, 'updatePrestasi']);
+
+Route::get('proker', [ProkerController::class, 'index']);
+Route::post('proker', [ProkerController::class, 'store']);
