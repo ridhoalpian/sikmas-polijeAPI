@@ -56,4 +56,31 @@ class ProkerController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+    public function updateLampiranProker(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'lampiran_proker' => 'required|file|mimes:pdf|max:2048', // Validasi untuk file PDF
+        ]);
+
+        try {
+            $proker = ProgamKerja::findOrFail($id);
+
+            // Hapus lampiran lama jika ada
+            if ($proker->lampiran_proker) {
+                Storage::disk('public')->delete($proker->lampiran_proker);
+            }
+
+            // Menyimpan file lampiran baru
+            $lampiranProkerPath = $request->file('lampiran_proker')->store('lampiran', 'public');
+
+            // Update lampiran_proker di database
+            $proker->update([
+                'lampiran_proker' => $lampiranProkerPath,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Lampiran proker berhasil diperbarui']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }

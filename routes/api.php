@@ -39,3 +39,4 @@ Route::post('prestasi/{idprestasi}', [PrestasiController::class, 'updatePrestasi
 
 Route::get('proker', [ProkerController::class, 'index']);
 Route::post('proker', [ProkerController::class, 'store']);
+Route::post('proker/{id}', [ProkerController::class, 'updateLampiranProker']);
