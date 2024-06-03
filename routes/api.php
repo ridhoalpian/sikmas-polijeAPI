@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PendanaanController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\ProkerController;
 use Illuminate\Http\Request;
@@ -40,3 +41,5 @@ Route::post('prestasi/{idprestasi}', [PrestasiController::class, 'updatePrestasi
 Route::get('proker', [ProkerController::class, 'index']);
 Route::post('proker', [ProkerController::class, 'store']);
 Route::post('proker/{id}', [ProkerController::class, 'updateLampiranProker']);
+
+Route::get('/pendanaan', [PendanaanController::class, 'index']);
