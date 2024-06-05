@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\LPJController;
 use App\Http\Controllers\PendanaanController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\ProkerController;
@@ -46,3 +48,7 @@ Route::post('proker/{id}', [ProkerController::class, 'updateLampiranProker']);
 Route::get('/pendanaan', [PendanaanController::class, 'index']);
 
 Route::get('dashboard/counts', [DashboardController::class, 'getCounts']);
+
+Route::get('lpj/{user_id}', [LPJController::class, 'getlpj']);
+
+Route::get('kegiatan/{user_id}', [KegiatanController::class, 'getKegiatan']);
