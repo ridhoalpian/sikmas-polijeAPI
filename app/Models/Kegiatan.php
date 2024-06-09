@@ -22,6 +22,7 @@ class Kegiatan extends Model
         'penanggung_jawab',
         'pengajuan_dana',
         'periode',
-        'proker_id'
+        'proker_id',
+        'user_id'
     ];
 }

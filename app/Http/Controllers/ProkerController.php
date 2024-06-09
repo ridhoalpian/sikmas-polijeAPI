@@ -59,7 +59,7 @@ class ProkerController extends Controller
     public function updateLampiranProker(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'lampiran_proker' => 'required|file|mimes:pdf|max:2048', // Validasi untuk file PDF
+            'lampiran_proker' => 'required|file|mimes:pdf|max:2048',
         ]);
 
         try {
@@ -68,6 +68,13 @@ class ProkerController extends Controller
             // Hapus lampiran lama jika ada
             if ($proker->lampiran_proker) {
                 Storage::disk('public')->delete($proker->lampiran_proker);
+            }
+
+            // Menentukan status_proker baru berdasarkan kondisi
+            if ($proker->status_proker == 'revisi') {
+                $proker->status_proker = 'perbaikanrevisi';
+            } else if ($proker->status_proker == 'terkirim') {
+                $proker->status_proker = 'terkirim';
             }
 
             // Menyimpan file lampiran baru
@@ -83,4 +90,5 @@ class ProkerController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
 }

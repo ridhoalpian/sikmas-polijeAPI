@@ -50,5 +50,9 @@ Route::get('/pendanaan', [PendanaanController::class, 'index']);
 Route::get('dashboard/counts', [DashboardController::class, 'getCounts']);
 
 Route::get('lpj/{user_id}', [LPJController::class, 'getlpj']);
+Route::post('/lpj', [LPJController::class, 'store']);
+Route::post('lpj/{id}', [LPJController::class, 'updateLampiranPJ']);
 
 Route::get('kegiatan/{user_id}', [KegiatanController::class, 'getKegiatan']);
+Route::post('/kegiatan', [KegiatanController::class, 'store']);
+Route::post('kegiatan/{id}', [KegiatanController::class, 'updateProposalKegiatan']);
