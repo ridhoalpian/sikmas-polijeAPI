@@ -56,3 +56,4 @@ Route::post('lpj/{id}', [LPJController::class, 'updateLampiranPJ']);
 Route::get('kegiatan/{user_id}', [KegiatanController::class, 'getKegiatan']);
 Route::post('/kegiatan', [KegiatanController::class, 'store']);
 Route::post('kegiatan/{id}', [KegiatanController::class, 'updateProposalKegiatan']);
+Route::post('updatestatus/{id}', [KegiatanController::class, 'updateStatusKegiatan']);

@@ -96,4 +96,21 @@ class KegiatanController extends Controller
         }
     }
 
+    public function updateStatusKegiatan(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'status_kegiatan' => 'required|string|in:pencairan,selesai',
+        ]);
+
+        try {
+            $kegiatan = Kegiatan::findOrFail($id);
+            $kegiatan->status_kegiatan = $validatedData['status_kegiatan'];
+            $kegiatan->save();
+
+            return response()->json(['success' => true, 'message' => 'Status Kegiatan berhasil diperbarui']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
 }
